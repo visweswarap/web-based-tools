@@ -1,0 +1,133 @@
+<html lang="HTML">
+<head>
+    <title>Calculate SIP Returns</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app" style="display: flex">
+    <div class="returns-calculation" style="width: 40%;">
+        <h1>Calculate SIP Returns</h1>
+        <br>
+        <div class="fields">
+            <label for="monthlyInvestment" class="label">Principal:</label>
+            <input type="number" id="monthlyInvestment" v-model="monthlyInvestment" @input="calculateSIPReturn">
+        </div>
+        <div class="fields">
+            <label for="rateOfReturn" class="label">Rate of Return:</label>
+            <input type="number" id="rateOfReturn" v-model="rateOfReturn" @input="calculateSIPReturn">
+        </div>
+        <div class="fields">
+            <label for="tenureInYears" class="label">Tenure in Years:</label>
+            <input type="number" id="tenureInYears" v-model="tenureInYears" @input="calculateSIPReturn">
+        </div>
+        <div class="fields">
+            <label class="label">SIP Returns:</label>
+            <label class="result">{{sipReturnsFormatted}}</label>
+        </div>
+    </div>
+    <div class="returns-calculation" style="width: 40%">
+        <h1>Calculate Lumpsum Returns</h1>
+        <br>
+        <div class="fields">
+            <label for="monthlyInvestment" class="label">Lumpsum Amount:</label>
+            <input type="number" id="amountInvested" v-model="amountInvested" @input="calculateLumpsumReturn">
+        </div>
+        <div class="fields">
+            <label for="rateOfReturn" class="label">Rate of Return:</label>
+            <input type="number" id="rateOfReturnL" v-model="rateOfReturnL" @input="calculateLumpsumReturn">
+        </div>
+        <div class="fields">
+            <label for="tenureInYears" class="label">Tenure in Years:</label>
+            <input type="number" id="tenureInYearsL" v-model="tenureInYearsL" @input="calculateLumpsumReturn">
+        </div>
+        <div class="fields">
+            <label class="label">What you will get:</label>
+            <label class="result">{{returnsLumpsumFormatted}}</label>
+        </div>
+    </div>
+</div>
+<style>
+    .returns-calculation {
+        width: 35%;
+        padding: 1em;
+        border: 1px solid GREEN;
+        border-radius: 10px;
+        font-family: cursive;
+        margin: 1em;
+
+        .fields {
+            padding-bottom: 14px;
+        }
+
+        .result {
+            font-size: xxx-large;
+            color: darkgreen;
+            background-color: lemonchiffon;
+            border: darkgreen 2px solid;
+            border-radius: 10px;
+        }
+
+        input {
+            height: 40px;
+            border: 2px solid blue;
+            border-radius: 7px;
+            font-size: xx-large;
+            font-weight: bold;
+        }
+
+        .label {
+            display: inline-block;
+            width: 40%;
+            font-size: xx-large;
+            font-style: italic;
+        }
+    }
+</style>
+<script>
+    const App = {
+        data() {
+            return {
+                monthlyInvestment: 5000,
+                rateOfReturn: 12,
+                tenureInYears: 5,
+                sipReturns: 0,
+                sipReturnsFormatted: '',
+                amountInvested: 100000,
+                rateOfReturnL: 12,
+                tenureInYearsL: 5,
+                returnsLumpsum: 0,
+                returnsLumpsumFormatted: ''
+            }
+        },
+        methods: {
+            calculateSIPReturn() {
+                let formatter = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR'});
+                const monthlyInvestment = this.monthlyInvestment;
+                const rateOfReturn = this.rateOfReturn;
+                const tenureInYears = this.tenureInYears;
+                const tenureInMonths = tenureInYears * 12;
+                const monthlyRateOfReturn = (rateOfReturn/100) / 12;
+                const sipReturns = monthlyInvestment * ((Math.pow(1 + monthlyRateOfReturn, tenureInMonths) - 1) / monthlyRateOfReturn) * (1 + monthlyRateOfReturn);
+                this.sipReturns = sipReturns.toFixed(2);
+                this.sipReturnsFormatted = formatter.format(sipReturns);
+            },
+            calculateLumpsumReturn() {
+                let formatter = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR'});
+                const amountInvested = this.amountInvested;
+                const rateOfReturnL = this.rateOfReturnL;
+                const tenureInYearsL = this.tenureInYearsL;
+                const lumpsumReturns = amountInvested * Math.pow(1 + (rateOfReturnL/100), tenureInYearsL);
+                this.returnsLumpsum = lumpsumReturns.toFixed(2);
+                this.returnsLumpsumFormatted = formatter.format(lumpsumReturns);
+            }
+        },
+        mounted() {
+            this.calculateSIPReturn();
+            this.calculateLumpsumReturn();
+        }
+    }
+
+    Vue.createApp(App).mount('#app')
+</script>
+</body>
+</html>
